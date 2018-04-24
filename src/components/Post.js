@@ -6,25 +6,36 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
+import InputComentario from './InputComentario'
+import Likes from './Likes'
 
 export default class Post extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      foto: this.props.foto
+      foto: this.props.foto,
     }
 
     this.like = this.like.bind(this)
   }
 
-  carregaIcone() {
-    return this.state.foto.likeada ? require('../../resources/img/s2-checked.png') :
-      require('../../resources/img/s2.png')
+  exibeLegenda(foto) {
+    if (foto.comentario === '')
+      return;
+
+    return (
+      <View style={styles.comentario}>
+        <Text style={styles.tituloComentario}>{foto.loginUsuario}</Text>
+        <Text>{foto.comentario}</Text>
+      </View>
+    )
   }
 
   like = () => {
+    const { foto } = this.state
 
     let novaLista = []
     if (!this.state.foto.likeada)
@@ -41,29 +52,32 @@ export default class Post extends Component {
       likers: novaLista
     }
     this.setState({ foto: fotoAtualizada })
+
   }
 
-  exibeLikes(likers) {
-    return likers.length > 0 &&
-      <Text style={styles.likes}>
-        {likers.length} {likers.length > 1 ? 'curtidas' : 'curtida'}
-      </Text>
-  }
-
-  exibeLegenda(foto) {
-    if (foto.comentario === '')
+  adicionaComentario = (valorComentario, inputComentario) => {
+    if (valorComentario === '')
       return;
 
-    return (
-      <View style={styles.comentario}>
-        <Text style={styles.tituloComentario}>{foto.loginUsuario}</Text>
-        <Text>{foto.comentario}</Text>
-      </View>
-    )
+    const novaLista = [...this.state.foto.comentarios, {
+      id: Math.random(),
+      login: 'meuUsuario',
+      texto: valorComentario
+    }]
+
+    const fotoAtualizada = {
+      ...this.state.foto,
+      comentarios: novaLista,
+    }
+
+    this.setState({ foto: fotoAtualizada })
+    inputComentario.clear()
+
   }
 
   render() {
-    const { foto } = this.state;
+    const { foto } = this.state
+
     return (
       <View>
         <View style={styles.cabecalho}>
@@ -73,18 +87,21 @@ export default class Post extends Component {
         <Image source={{ uri: foto.urlFoto }} style={styles.foto} />
 
         <View style={styles.rodape}>
-          <TouchableOpacity onPress={this.like}>
-            <Image style={styles.botaoDeLike}
-              source={this.carregaIcone(foto.likeada)} />
-          </TouchableOpacity>                
-
-          {this.exibeLikes(foto.likers)} 
+          <Likes foto={foto} likeCallback={this.like.bind(this)} />
           {this.exibeLegenda(foto)}
 
+          {foto.comentarios.map(comentario =>
+            <View style={styles.comentario} key={comentario.id}>
+              <Text style={styles.tituloComentario}>{comentario.login}</Text>
+              <Text>{comentario.texto}</Text>
+            </View>
+          )}
+
+          <InputComentario
+            comentarioCallback={this.adicionaComentario.bind(this)} />
         </View>
       </View>
-
-    );
+    )
   }
 }
 
@@ -101,7 +118,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     width: 40,
     height: 40,
-    borderRadius: 20
+    borderRadius: 20,
   },
 
   foto: {
@@ -111,16 +128,6 @@ const styles = StyleSheet.create({
 
   rodape: {
     margin: 10,
-  },
-
-  botaoDeLike: {
-    height: 20,
-    width: 20,
-  },
-
-  likes: {
-    fontWeight: 'bold',
-    marginBottom: 5,
   },
 
   comentario: {

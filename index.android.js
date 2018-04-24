@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  FlatList
+  FlatList,
 } from 'react-native';
 
 import Post from './src/components/Post';
@@ -17,9 +17,12 @@ export default class InstaluraMobile extends Component {
   }
 
   componentDidMount() {
-    fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael')
+    //fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael')
+    fetch('http://10.0.2.2:8080/api/public/fotos/rafael')
       .then(response => response.json())
-      .then(json => this.setState({ fotos: json }))
+      .then(json => {
+        this.setState({ fotos: json })
+      })
   }
 
   render() {
@@ -37,9 +40,9 @@ export default class InstaluraMobile extends Component {
 
 const styles = StyleSheet.create({
   container: {
-
+    // marginTop: Platform.OS == 'ios' ? 20: 0,
   },
 
-});
+})
 
 AppRegistry.registerComponent('InstaluraMobile', () => InstaluraMobile);
