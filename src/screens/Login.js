@@ -24,7 +24,7 @@ export default class Login extends Component {
     efetuaLogin = () => {
         
         const uri = //'http://192.168.0.137:8080/api/public/login'
-        'https://instalura-api.herokuapp.com/api/login'
+        'https://instalura-api.herokuapp.com/api/public/login'
 
         const request = {
             method: 'POST',
@@ -45,9 +45,9 @@ export default class Login extends Component {
                 return response.text()
             })
             .then(token => {
-                //AsyncStorage.setItem('token', token)
+            
+                AsyncStorage.setItem('token', token)
                 AsyncStorage.setItem('usuario', this.state.usuario)
-                //AsyncStorage.setItem('usuario', JSON.stringify(usuario))
 
                 this.props.navigator.resetTo({
                     screen: 'Feed',
